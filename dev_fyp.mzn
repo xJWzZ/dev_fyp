@@ -4,6 +4,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %DATA
+% array[TEAMS,TEAMS] of int: fixtures;%Not used in this model
 int: n;
 set of int: TEAMS=1..n;
 array[TEAMS] of int: iPoints;
@@ -110,8 +111,8 @@ output["Game Results:\nTeam1 \tpts \tTeam2 \tpts: \n" ]++
       ["Points=\(points)\n"];
 
 
-solve minimize num_losses[1];
-%solve minimize fPoints[1]
+% solve satisfy;
+solve minimize fPoints[1]
 %solve minimize (p in TEAMS)(sum fPoints[p]);
 
 

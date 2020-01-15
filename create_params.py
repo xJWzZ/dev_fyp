@@ -1,19 +1,16 @@
 import copy
 from random import randint, shuffle
 from datetime import datetime
+from sys import argv
 
-handler = open('test_data.mzn', "w+")
+handler = open(argv[1], "w+")
 
-# num_of_teams = input("Enter number of teams:\n")
-# num_of_fixtures_played = input("Enter Number of fixtures played:\n")
-num_of_teams = "4"
-num_of_fixtures_played = "2"
+num_of_teams = 20
+num_of_fixtures_played = argv[2]
+num_of_constraints = argv[3]
 
-num_of_teams = int(num_of_teams)
 
-if num_of_teams % 2 == 1:
-    print("Error: Number of teams must be an even number")
-    exit()
+num_of_constraints = int(num_of_constraints)
 
 num_of_fixtures_played = int(num_of_fixtures_played)
 
@@ -58,11 +55,9 @@ for fixture in range((num_of_teams-1)*2):
     # add a new fixture
     fixtures.append([])
 
-# print(list(range(1, len(fixtures)+1)))
 fixture_numbers = list(range(1, len(fixtures)+1))
 
 # not gonna work when there's 3 games left for every team
-print(all_games)
 shuffle(all_games)
 
 # Generate the table
@@ -103,46 +98,62 @@ handler.write("""
 %%DESCRIPTION: 	%d games played with %d games left				%%
 """ % (now, num_of_fixtures_played, len(all_games)))
 
+handler.write('\nn=%d; %%number of teams\n' % num_of_teams)
+
 formatted_games_to_play = '['
 
 for game in all_games:
     formatted_games_to_play += '|%d,%d' % (game[0], game[1])
 formatted_games_to_play += '|];'
 
-print('games to play: ' + formatted_games_to_play)
+# print('games to play: ' + formatted_games_to_play)
+
+handler.write('\n%%Games to play\ngames=%s\n' % formatted_games_to_play)
 
 formatted_table = '['
 for i in table:
     formatted_table += '%d,' % table[i]
 formatted_table = formatted_table[:-1]
 formatted_table += '];'
-print('current table: ' + formatted_table)
+# print('current table: ' + formatted_table)
 
-# game assignment to appropriate fixture.
-'''for team1 in range(1, num_of_teams):
-    fixtures_to_be_assigned = copy.deepcopy(fixture_numbers)
-    # going through all the fixtures and assigning team1's games
-    # to every fixture in the form (team1, team2)
-    for team2 in range(team1, num_of_teams+1):
-        fixture_index = randint(0, len(fixtures_to_be_assigned))
-        fixtures[fixture_index].append((team1, team2))
-        if len(fixtures_to_be_assigned) == 0:
-            fixtures_to_be_assigned = copy.deepcopy(fixture_numbers)
-    # same thing but for the form (team2, team1)
-    for team2 in range(team1, num_of_teams+1):
-        fixture_index = randint(0, len(fixtures_to_be_assigned))
-        # #################################################################################
-        # problem here: fixtures[fixture_index] is the location of the tuple
-        # we need the direct values of the tuple however
-        while (team2 not in fixtures[fixture_index]) and \
-            (team1 not in fixtures[fixture_index]):
-            fixture_index = randint(0, len(fixtures_to_be_assigned))
-        fixtures[fixture_index].append((team2, team1))
-        if len(fixtures_to_be_assigned) == 0:
-            fixtures_to_be_assigned = copy.deepcopy(fixture_numbers)'''
-# fixtures_to_be_assigned = copy.deepcopy(results)
-# for team1 in range(total_fixtures):
+handler.write('\n%%Initial points\niPoints=%s\n' % formatted_table)
 
+# need to create the constraints.
+# random team number, random constraint, then random team number thats not the
+# first team number.
+# check to see if it runs.
+# get it to make it in a file structure like the test set.
+# make the running set
+# make a bash script that runs this then runs the running set.
 
-# for i in range(5):
-#     handler.write("test\n")
+# creating constraints
+constraints = []
+formatted_constraints = "["
+for _ in range(num_of_constraints):
+    team1 = randint(1, num_of_teams)
+    team2 = randint(1, num_of_teams)
+    while team2 == team1:
+        team2 = randint(1, num_of_teams)
+    constraint = randint(1, 4)
+    constraints += [[team1, constraint, team2]]
+
+# print(constraints)
+
+for constraint in constraints:
+    formatted_constraints += '|%d,%d,%d' % \
+        (constraint[0], constraint[1], constraint[2])
+formatted_constraints += '|];'
+
+handler.write('''
+%POSITION CONSTRAINTS
+% [|teamID, operator, position|...]
+% operators index:
+%  1 for =  operator
+%  2 for >  operator
+%  3 for >= operator
+%  4 for <  operator
+%  5 for <= operator
+''')
+
+handler.write('positionConstraints=%s' % formatted_constraints)
