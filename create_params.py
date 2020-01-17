@@ -58,6 +58,7 @@ for fixture in range((num_of_teams-1)*2):
 fixture_numbers = list(range(1, len(fixtures)+1))
 
 # not gonna work when there's 3 games left for every team
+# print(len(all_games))
 shuffle(all_games)
 
 # Generate the table
@@ -67,8 +68,15 @@ for i in range(1, num_of_teams+1):
 
 # iterate through each game in the shuffled list.
 # after each game, update the table accordingly
+# print('num_of_fixtures_played')
+# print(num_of_fixtures_played)
+# print('allgames')
+# print(all_games[300])
+all_games_copy = copy.deepcopy(all_games)
+# print(len(all_games))
 for i in range(num_of_fixtures_played):
-    game_to_play = all_games[i]
+    # print(i)
+    game_to_play = all_games_copy[i]
     (team1, team2) = game_to_play
     results[(team1, team2)] = 1
     result_of_game = randint(0, 2)
@@ -80,7 +88,7 @@ for i in range(num_of_fixtures_played):
     else:
         table[team1] += 1
         table[team2] += 1
-
+# print(len(all_games))
 now = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
 
 # introduce a time limit for executing instances in minizinc command line
