@@ -15,9 +15,10 @@ array[int, int] of int: positionConstraints;
 
 set of int: pt={0,1,3};
 set of int: numberOfGames=1..(length(games) div 2);
+set of int: numberOfGames0=0..(length(games) div 2);
 set of int: l1={0,1};
 array[TEAMS, TEAMS] of var l1: losses;
-array[TEAMS] of var numberOfGames: num_losses;
+array[TEAMS] of var numberOfGames0: num_losses;
 
 %DECISION VARIABLES
 array[numberOfGames, 1..2] of var pt: points;
@@ -103,7 +104,7 @@ constraint forall(i in 1..numberPositionConstraints) (
 
 
 output["Game Results:\nTeam1 \tpts \tTeam2 \tpts: \n" ]++
-      [show_int(2, games[i,j])++"\t" ++ show_int(2, points[i,j])++"\t" ++ if j=2 then "\n" else " " endif | i in numberOfGames, j in 1..2]++
+%       [show_int(2, games[i,j])++"\t" ++ show_int(2, points[i,j])++"\t" ++ if j=2 then "\n" else " " endif | i in numberOfGames, j in 1..2]++
       ["Initial Points=\(iPoints)\n"]++
       ["Final Positions=\(finalPosition)\n"]++
       ["Final Points=\(fPoints)\n"]++
@@ -111,8 +112,9 @@ output["Game Results:\nTeam1 \tpts \tTeam2 \tpts: \n" ]++
       ["Points=\(points)\n"];
 
 
-% solve satisfy;
-solve minimize fPoints[1]
+solve satisfy;
+% solve minimize fPoints[12]
+% solve minimize num_losses[1]
 %solve minimize (p in TEAMS)(sum fPoints[p]);
 
 

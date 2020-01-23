@@ -2,17 +2,16 @@ import time
 import os
 import signal
 import subprocess, threading
+from sys import argv
+from prettytable import PrettyTable
 
 average_times = []
 
+selected_games_left = int(argv[1])
+
 os.chdir('LeagueTestMiniZinc')
 
-os.chdir('1GamesLeft')
-# for i in range(1,18+1):
-    # os.chdir('%dGamesLeft' % i)
-    # for j in range(10):
-        # might have to use threading
-        # None
+os.chdir('%dGamesLeft' % selected_games_left)
 
 
 class Command(object):
@@ -36,19 +35,32 @@ class Command(object):
             # print('Terminating process')
             os.killpg(self.process.pid, signal.SIGTERM)
             thread.join()
-        print(self.process.returncode)
         return self.process.returncode
 
+header = ['Num of Constraints for %d games left' % (selected_games_left), 'time1', 'time2', 'time3', 'time4', 'time5', 'time6', 'time7', 'time8', 'time9', 'time10']
 
 times = []
 
-for j in range(10):
-    command = Command('minizinc --solver Gecode ../../dev_fyp.mzn 1GamesLeftDataset%d.dzn' % 0)
-    # plotting how long each takes, or whether it terminates or not?
-    start_time = time.time()
-    command.run(timeout=15)
-    end_time = time.time()
+table = PrettyTable()
 
-    times.append(end_time-start_time)
+table.field_names = header
 
-print(times)
+for constraint_num in range(1,6):
+    constraint_times = [constraint_num]
+    os.chdir('%dConstraints' % (constraint_num))
+    for dataset_num in range(10):
+        command = Command('''minizinc --solver Gecode ../../../dev_fyp.mzn %dGamesLeft%dConstraintsDataset%d.dzn'''
+                          % (selected_games_left, constraint_num, dataset_num))
+        # plotting how long each takes, or whether it terminates or not?
+        start_time = time.time()
+        command.run(timeout=15)
+        end_time = time.time()
+
+        constraint_times.append(round(end_time - start_time, 6))
+    os.chdir('..')
+    table.add_row(constraint_times)
+    # times.append(constraint_times)
+
+    # times.append(round(end_time-start_time, 6))
+print(table)
+# print(times)
