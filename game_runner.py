@@ -1,9 +1,11 @@
 import time
 import os
 import signal
-import subprocess, threading
+import subprocess
+import threading
 from sys import argv
 from prettytable import PrettyTable
+import csv
 
 average_times = []
 
@@ -45,7 +47,9 @@ table = PrettyTable()
 
 table.field_names = header
 
-for constraint_num in range(1,6):
+
+
+for constraint_num in range(1, 4):
     constraint_times = [constraint_num]
     os.chdir('%dConstraints' % (constraint_num))
     for dataset_num in range(10):
@@ -58,9 +62,12 @@ for constraint_num in range(1,6):
 
         constraint_times.append(round(end_time - start_time, 6))
     os.chdir('..')
+    # print(constraint_times)
+    times.append(constraint_times)
     table.add_row(constraint_times)
     # times.append(constraint_times)
 
     # times.append(round(end_time-start_time, 6))
 print(table)
+print(times)
 # print(times)

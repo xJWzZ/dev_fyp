@@ -2,16 +2,16 @@
 %FILE DATA:	Soccer Computational Problem for MiniZinc Models	%
 %AUTHOR:	Jack Wall	%
 %CONTACT:  	116397063@umail.ucc.ie			%
-%LAST UPDATE:	01/22/2020, 10:43:05						%
-%DESCRIPTION: 	310 games played with 70 games left				%
+%LAST UPDATE:	01/29/2020, 10:18:01						%
+%DESCRIPTION: 	28 games played with 28 games left				%
 
-n=20; %number of teams
+n=8; %number of teams
 
 %Games to play
-games=[|2,11|16,9|10,15|18,12|14,9|15,7|12,13|6,7|11,15|8,19|3,20|19,1|6,15|2,8|18,3|13,5|3,5|5,15|6,17|10,4|1,8|15,17|8,10|12,19|5,3|8,12|11,10|17,14|2,5|14,19|7,3|11,13|8,5|17,11|20,3|4,13|19,4|1,9|12,10|8,14|16,2|16,11|13,17|5,8|3,17|5,12|9,3|2,19|7,18|17,16|18,15|16,5|18,19|12,3|5,17|4,18|12,7|20,8|6,14|17,19|15,5|19,6|10,16|7,13|7,8|10,12|4,2|10,5|19,7|7,10|];
+games=[|5,3|4,7|3,2|4,2|7,2|4,5|7,4|7,8|6,4|7,1|8,3|2,3|5,1|5,4|2,1|6,1|5,6|3,4|3,5|8,1|2,8|3,6|8,2|2,7|6,2|1,4|5,8|3,7|];
 
 %Initial points
-iPoints=[48,44,41,33,36,64,37,31,37,29,39,36,45,46,36,43,45,41,33,54];
+iPoints=[15,5,6,6,8,16,9,10];
 
 %POSITION CONSTRAINTS
 % [|teamID, operator, position|...]
@@ -21,4 +21,4 @@ iPoints=[48,44,41,33,36,64,37,31,37,29,39,36,45,46,36,43,45,41,33,54];
 %  3 for >= operator
 %  4 for <  operator
 %  5 for <= operator
-positionConstraints=[|6,4,2|17,4,3|];
+positionConstraints=[|2,4,2|6,4,3|];

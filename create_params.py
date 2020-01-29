@@ -5,7 +5,7 @@ from sys import argv
 
 handler = open(argv[1], "w+")
 
-num_of_teams = 20
+num_of_teams = int(argv[4])
 num_of_fixtures_played = argv[2]
 num_of_constraints = argv[3]
 

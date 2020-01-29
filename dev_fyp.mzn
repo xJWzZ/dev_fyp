@@ -103,8 +103,8 @@ constraint forall(i in 1..numberPositionConstraints) (
 
 
 
-output["Game Results:\nTeam1 \tpts \tTeam2 \tpts: \n" ]++
-%       [show_int(2, games[i,j])++"\t" ++ show_int(2, points[i,j])++"\t" ++ if j=2 then "\n" else " " endif | i in numberOfGames, j in 1..2]++
+output["Fixtures Left=\(length(games))\n"]++
+      ["Number Of Constraints=\(length(positionConstraints)/3)\n"]++
       ["Initial Points=\(iPoints)\n"]++
       ["Final Positions=\(finalPosition)\n"]++
       ["Final Points=\(fPoints)\n"]++
@@ -112,8 +112,8 @@ output["Game Results:\nTeam1 \tpts \tTeam2 \tpts: \n" ]++
       ["Points=\(points)\n"];
 
 
-solve satisfy;
-% solve minimize fPoints[12]
+% solve satisfy;
+solve minimize fPoints[1]
 % solve minimize num_losses[1]
 %solve minimize (p in TEAMS)(sum fPoints[p]);
 

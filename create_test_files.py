@@ -4,6 +4,7 @@ from sys import argv
 # 1 game left to 18 games left
 max_games_left = int(argv[1])
 max_num_of_constraints = int(argv[2])
+num_of_teams = int(argv[3])
 
 if os.path.exists('LeagueTestMiniZinc'):
     os.system('rm -r LeagueTestMiniZinc')
@@ -29,10 +30,10 @@ for i in range(1, max_games_left + 1):
         os.mkdir('%dConstraints' % num_of_constraints)
         os.chdir('%dConstraints' % num_of_constraints)
         for j in range(10):
-            games_played = 380 - (i*10)
+            games_played = (num_of_teams*(num_of_teams-1)) - (i*(num_of_teams/2))
             # num_of_constraints to be changed.
             # num_of_constraints = 2
-            os.system('python3 ../../../create_params.py %dGamesLeft%dConstraintsDataset%d.dzn %d %d'
-                % (i, num_of_constraints, j, games_played, num_of_constraints))
+            os.system('python3 ../../../create_params.py %dGamesLeft%dConstraintsDataset%d.dzn %d %d %d'
+                % (i, num_of_constraints, j, games_played, num_of_constraints, num_of_teams))
         os.chdir('..')
     os.chdir('..')
