@@ -102,14 +102,14 @@ constraint forall(i in 1..numberPositionConstraints) (
 );
 
 
-
-output["Fixtures Left=\(length(games))\n"]++
-      ["Number Of Constraints=\(length(positionConstraints)/3)\n"]++
-      ["Initial Points=\(iPoints)\n"]++
-      ["Final Positions=\(finalPosition)\n"]++
-      ["Final Points=\(fPoints)\n"]++
-      ["Losses=\(num_losses)\n"]++
-      ["Points=\(points)\n"];
+output[""];
+% output["Fixtures Left=\(length(games))\n"]++
+%       ["Number Of Constraints=\(length(positionConstraints)/3)\n"]++
+%       ["Initial Points=\(iPoints)\n"]++
+%       ["Final Positions=\(finalPosition)\n"]++
+%       ["Final Points=\(fPoints)\n"]++
+%       ["Losses=\(num_losses)\n"]++
+%       ["Points=\(points)\n"];
 
 
 % solve satisfy;

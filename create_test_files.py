@@ -2,15 +2,16 @@ import os
 from sys import argv
 
 # 1 game left to 18 games left
-max_games_left = int(argv[1])
-max_num_of_constraints = int(argv[2])
-num_of_teams = int(argv[3])
+max_games_left = int(argv[2])
+max_num_of_constraints = int(argv[3])
+num_of_teams = int(argv[1])
 
-if os.path.exists('LeagueTestMiniZinc'):
-    os.system('rm -r LeagueTestMiniZinc')
+if os.path.exists('LeagueTestMiniZinc%dTeams' % num_of_teams):
+    # os.system('rm -r LeagueTestMiniZinc%dTeams' % num_of_teams)
+    exit()
 
-os.mkdir('LeagueTestMiniZinc')
-os.chdir('LeagueTestMiniZinc')
+os.mkdir('LeagueTestMiniZinc%dTeams' % num_of_teams)
+os.chdir('LeagueTestMiniZinc%dTeams' % num_of_teams)
 
 # os.mkdir('1GamesLeft')
 # os.chdir('1GamesLeft')

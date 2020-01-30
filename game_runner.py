@@ -9,12 +9,6 @@ import csv
 
 average_times = []
 
-selected_games_left = int(argv[1])
-
-os.chdir('LeagueTestMiniZinc')
-
-os.chdir('%dGamesLeft' % selected_games_left)
-
 
 class Command(object):
     def __init__(self, cmd):
@@ -39,35 +33,34 @@ class Command(object):
             thread.join()
         return self.process.returncode
 
-header = ['Num of Constraints for %d games left' % (selected_games_left), 'time1', 'time2', 'time3', 'time4', 'time5', 'time6', 'time7', 'time8', 'time9', 'time10']
+# header = ['Num of Constraints for %d games left' % (selected_games_left), 'time1', 'time2', 'time3', 'time4', 'time5', 'time6', 'time7', 'time8', 'time9', 'time10']
 
-times = []
+times = [['Constraints', 'time1', 'time2', 'time3', 'time4', 'time5', 'time6', 'time7', 'time8' , 'time9', 'time10']]
 
 table = PrettyTable()
 
-table.field_names = header
+# table.field_names = header
 
 
+def run_tests(selected_games_left, num_of_teams):
+    os.chdir('LeagueTestMiniZinc%dTeams' % num_of_teams)
 
-for constraint_num in range(1, 4):
-    constraint_times = [constraint_num]
-    os.chdir('%dConstraints' % (constraint_num))
-    for dataset_num in range(10):
-        command = Command('''minizinc --solver Gecode ../../../dev_fyp.mzn %dGamesLeft%dConstraintsDataset%d.dzn'''
-                          % (selected_games_left, constraint_num, dataset_num))
-        # plotting how long each takes, or whether it terminates or not?
-        start_time = time.time()
-        command.run(timeout=15)
-        end_time = time.time()
+    os.chdir('%dGamesLeft' % selected_games_left)
 
-        constraint_times.append(round(end_time - start_time, 6))
-    os.chdir('..')
-    # print(constraint_times)
-    times.append(constraint_times)
-    table.add_row(constraint_times)
-    # times.append(constraint_times)
+    for constraint_num in range(1, 4):
+        constraint_times = [constraint_num]
+        os.chdir('%dConstraints' % (constraint_num))
+        for dataset_num in range(10):
+            command = Command('''minizinc --solver Gecode ../../../dev_fyp.mzn %dGamesLeft%dConstraintsDataset%d.dzn'''
+                              % (selected_games_left, constraint_num, dataset_num))
+            # plotting how long each takes, or whether it terminates or not?
+            start_time = time.time()
+            command.run(timeout=15)
+            end_time = time.time()
 
-    # times.append(round(end_time-start_time, 6))
-print(table)
-print(times)
-# print(times)
+            constraint_times.append(round(end_time - start_time, 6))
+        os.chdir('..')
+        # print(constraint_times)
+        times.append(constraint_times)
+        table.add_row(constraint_times)
+    return times
