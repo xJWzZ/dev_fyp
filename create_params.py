@@ -103,11 +103,31 @@ end_table = []
 
 for i in completed_table:
     end_table.append((completed_table[i], i))
+
 end_table.sort()
 end_table.reverse()
+print(end_table)
 
+# Assigning constraints
 for i in range(num_of_constraints):
-    constraints += [[end_table[i][1], 4, i+2]]
+    eq = randint(1, 5)
+    # Edge cases
+    if (eq == 2) & (i == 0):
+        eq += 1
+    if (eq == 4) & (i == num_of_constraints-1):
+        eq += 1
+
+    # Normal cases
+    if eq == 1:
+        constraints += [[end_table[i][1], 1, i+1]]
+    elif eq == 2:
+        constraints += [[end_table[i][1], 2, i]]
+    elif eq == 3:
+        constraints += [[end_table[i][1], 3, i+1]]
+    elif eq == 4:
+        constraints += [[end_table[i][1], 4, i+2]]
+    elif eq == 5:
+        constraints += [[end_table[i][1], 5, i+1]]
 
 handler.write("""
 %%FILE DATA:	Soccer Computational Problem for MiniZinc Models	%%

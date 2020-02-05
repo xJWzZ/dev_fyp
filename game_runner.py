@@ -4,7 +4,6 @@ import signal
 import subprocess
 import threading
 from sys import argv
-from prettytable import PrettyTable
 import csv
 
 average_times = []
@@ -35,9 +34,8 @@ class Command(object):
 
 # header = ['Num of Constraints for %d games left' % (selected_games_left), 'time1', 'time2', 'time3', 'time4', 'time5', 'time6', 'time7', 'time8', 'time9', 'time10']
 
-times = [['Constraints', 'time1', 'time2', 'time3', 'time4', 'time5', 'time6', 'time7', 'time8' , 'time9', 'time10']]
+times = []
 
-table = PrettyTable()
 
 # table.field_names = header
 
@@ -58,9 +56,9 @@ def run_tests(selected_games_left, num_of_teams):
             command.run(timeout=15)
             end_time = time.time()
 
-            constraint_times.append(round(end_time - start_time, 6))
+            times.append([num_of_teams, selected_games_left, constraint_num,
+                          round(end_time - start_time, 6)])
         os.chdir('..')
         # print(constraint_times)
-        times.append(constraint_times)
-        table.add_row(constraint_times)
+        # times.append(constraint_times)
     return times

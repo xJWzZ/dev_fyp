@@ -17,6 +17,6 @@ output = run_tests(max_games_left, 4)
 os.system('pwd')
 os.chdir('../..')
 
-with open('CSV_files/%dNumTeams.csv' % num_of_teams, 'w', newline='') as file:
+with open('CSV_files/fpoints.csv' % num_of_teams, 'w', newline='') as file:
     writer = csv.writer(file)
     writer.writerows(output)
