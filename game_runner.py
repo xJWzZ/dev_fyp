@@ -5,8 +5,10 @@ import subprocess
 import threading
 from sys import argv
 import csv
+import concurrent.futures
 
 average_times = []
+thread_times = []
 
 
 class Command(object):
@@ -18,8 +20,10 @@ class Command(object):
         def target():
             # print('Thread started')
             self.process = subprocess.Popen(self.cmd, shell=True, preexec_fn=os.setsid)
+            # self.process.communicate()
+            # self.process.check_output(self.cmd, shell=True, preexec_fn=os.setsid)
             self.process.communicate()
-            # print('Thread finished')
+            # thread_times.append(output.decode('utf-8')[0])
             return 0
 
         thread = threading.Thread(target=target)
@@ -32,33 +36,70 @@ class Command(object):
             thread.join()
         return self.process.returncode
 
-# header = ['Num of Constraints for %d games left' % (selected_games_left), 'time1', 'time2', 'time3', 'time4', 'time5', 'time6', 'time7', 'time8', 'time9', 'time10']
 
 times = []
+
+
+def run_minizinc(selected_games_left, constraint_num, dataset_num):
+    cmd = '''minizinc --output-time --solver Gecode ../../../dev_fyp.mzn %dGamesLeft%dConstraintsDataset%d.dzn''' % (selected_games_left, constraint_num, dataset_num)
+    result = subprocess.check_output(cmd, shell=True)
+    return result.decode('utf-8')
 
 
 # table.field_names = header
 
 
-def run_tests(selected_games_left, num_of_teams):
+def run_tests(selected_games_left, num_of_teams, num_of_constraints):
     os.chdir('LeagueTestMiniZinc%dTeams' % num_of_teams)
 
     os.chdir('%dGamesLeft' % selected_games_left)
 
-    for constraint_num in range(1, 4):
-        constraint_times = [constraint_num]
-        os.chdir('%dConstraints' % (constraint_num))
-        for dataset_num in range(10):
-            command = Command('''minizinc --solver Gecode ../../../dev_fyp.mzn %dGamesLeft%dConstraintsDataset%d.dzn'''
-                              % (selected_games_left, constraint_num, dataset_num))
-            # plotting how long each takes, or whether it terminates or not?
-            start_time = time.time()
-            command.run(timeout=15)
-            end_time = time.time()
+    headers = []
 
-            times.append([num_of_teams, selected_games_left, constraint_num,
-                          round(end_time - start_time, 6)])
+    for constraint_num in range(1, num_of_constraints+1):
+        os.chdir('%dConstraints' % (constraint_num))
+
+        # Adding the headers
+        if constraint_num == 1:
+            headers = os.popen('mzn2feat -i ../../../dev_fyp.mzn -d %dGamesLeft%dConstraintsDataset0.dzn -p'
+                               % (selected_games_left, constraint_num)).read()
+            headers = headers.split(',')
+            # headers += ['number_of_teams', 'fixtures_left',
+            #             'number_of_constraints', 'runtime', 'fpoints']
+
+        for dataset_num in range(10):
+            output = os.popen('minizinc --output-time --time-limit 5000 --solver Gecode ../../../dev_fyp.mzn %dGamesLeft%dConstraintsDataset%d.dzn'
+                              % (selected_games_left, constraint_num,
+                                 dataset_num)).read()
+
+            feature_values = os.popen('mzn2feat -i ../../../dev_fyp.mzn -d %dGamesLeft%dConstraintsDataset%d.dzn'
+                                      % (selected_games_left, constraint_num,
+                                         dataset_num)).read()
+
+            feature_values = feature_values.split(',')
+
+            output = output.split('\n')
+
+            fpoints = output[0]
+
+            if fpoints == '=====UNKNOWN=====':
+                fpoints = '-1'
+
+            time_elapsed = output[1].split(' ')
+            time_elapsed = time_elapsed[3]
+
+            row = feature_values
+            # row += [num_of_teams, selected_games_left, constraint_num,
+            #         time_elapsed, fpoints]
+            print('length of feature_values: %d, length of row: %d'
+                  % (len(feature_values), len(row)))
+            print(row[-1])
+
+            times.append(row)
+            print('%s teams, and %s constraints %s games left number %s'
+                  % (num_of_teams, constraint_num, selected_games_left, dataset_num))
+
         os.chdir('..')
-        # print(constraint_times)
-        # times.append(constraint_times)
-    return times
+    print(headers)
+    print(times)
+    return [headers, times]
