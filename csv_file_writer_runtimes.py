@@ -26,7 +26,7 @@ create_test_files(num_of_teams, max_games_left,
 # print('output')
 # print(output)
 # os.system('pwd')
-os.chdir('../..')
+os.chdir('..')
 file_name = 'CSV_files/LeagueDatasetTest.csv'
 
 with open(file_name, 'a', newline='') as file:

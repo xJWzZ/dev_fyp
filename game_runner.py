@@ -52,54 +52,58 @@ def run_minizinc(selected_games_left, constraint_num, dataset_num):
 def run_tests(selected_games_left, num_of_teams, num_of_constraints):
     os.chdir('LeagueTestMiniZinc%dTeams' % num_of_teams)
 
-    os.chdir('%dGamesLeft' % selected_games_left)
-
     headers = []
 
-    for constraint_num in range(1, num_of_constraints+1):
-        os.chdir('%dConstraints' % (constraint_num))
+    for game_left in range(1, selected_games_left+1):
 
-        # Adding the headers
-        if constraint_num == 1:
-            headers = os.popen('mzn2feat -i ../../../dev_fyp.mzn -d %dGamesLeft%dConstraintsDataset0.dzn -p'
-                               % (selected_games_left, constraint_num)).read()
-            headers = headers.split(',')
-            # headers += ['number_of_teams', 'fixtures_left',
-            #             'number_of_constraints', 'runtime', 'fpoints']
+        os.chdir('%dGamesLeft' % game_left)
 
-        for dataset_num in range(10):
-            output = os.popen('minizinc --output-time --time-limit 5000 --solver Gecode ../../../dev_fyp.mzn %dGamesLeft%dConstraintsDataset%d.dzn'
-                              % (selected_games_left, constraint_num,
-                                 dataset_num)).read()
+        for constraint_num in range(1, num_of_constraints+1):
+            os.chdir('%dConstraints' % (constraint_num))
 
-            feature_values = os.popen('mzn2feat -i ../../../dev_fyp.mzn -d %dGamesLeft%dConstraintsDataset%d.dzn'
-                                      % (selected_games_left, constraint_num,
-                                         dataset_num)).read()
+            # Adding the headers
+            if constraint_num == 1:
+                headers = os.popen('mzn2feat -i ../../../dev_fyp.mzn -d %dGamesLeft%dConstraintsDataset0.dzn -p'
+                                   % (game_left, constraint_num)).read()
+                headers = headers.split(',')
+                headers += ['number_of_teams', 'fixtures_left',
+                            'number_of_constraints', 'runtime', 'fpoints']
 
-            feature_values = feature_values.split(',')
+            for dataset_num in range(10):
+                output = os.popen('minizinc --output-time --time-limit 15000 --solver Gecode ../../../dev_fyp.mzn %dGamesLeft%dConstraintsDataset%d.dzn'
+                                  % (game_left, constraint_num,
+                                     dataset_num)).read()
 
-            output = output.split('\n')
+                feature_values = os.popen('mzn2feat -i ../../../dev_fyp.mzn -d %dGamesLeft%dConstraintsDataset%d.dzn'
+                                          % (game_left, constraint_num,
+                                             dataset_num)).read()
 
-            fpoints = output[0]
+                feature_values = feature_values.split(',')
 
-            if fpoints == '=====UNKNOWN=====':
-                fpoints = '-1'
+                output = output.split('\n')
 
-            time_elapsed = output[1].split(' ')
-            time_elapsed = time_elapsed[3]
+                fpoints = output[0]
 
-            row = feature_values
-            # row += [num_of_teams, selected_games_left, constraint_num,
-            #         time_elapsed, fpoints]
-            print('length of feature_values: %d, length of row: %d'
-                  % (len(feature_values), len(row)))
-            print(row[-1])
+                if fpoints == '=====UNKNOWN=====':
+                    fpoints = '-1'
 
-            times.append(row)
-            print('%s teams, and %s constraints %s games left number %s'
-                  % (num_of_teams, constraint_num, selected_games_left, dataset_num))
+                # os.system('ls')
+                # print(output)
+                time_elapsed = output[1].split(' ')
+                time_elapsed = time_elapsed[3]
+
+                row = feature_values
+                row += [num_of_teams, selected_games_left, constraint_num,
+                        time_elapsed, fpoints]
+                # print('length of feature_values: %d, length of row: %d'
+                #       % (len(feature_values), len(row)))
+                times.append(row)
+                print('%s teams, and %s constraints %s games left number %s'
+                      % (num_of_teams, constraint_num, game_left, dataset_num))
+
+            os.chdir('..')
 
         os.chdir('..')
-    print(headers)
-    print(times)
+    # print(headers)
+    # print(times)
     return [headers, times]
