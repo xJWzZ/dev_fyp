@@ -93,7 +93,7 @@ def run_tests(selected_games_left, num_of_teams, num_of_constraints):
                 time_elapsed = time_elapsed[3]
 
                 row = feature_values
-                row += [num_of_teams, selected_games_left, constraint_num,
+                row += [num_of_teams, game_left, constraint_num,
                         time_elapsed, fpoints]
                 # print('length of feature_values: %d, length of row: %d'
                 #       % (len(feature_values), len(row)))
