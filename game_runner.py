@@ -39,18 +39,18 @@ class Command(object):
 
 times = []
 
-
-def run_minizinc(selected_games_left, constraint_num, dataset_num):
-    cmd = '''minizinc --output-time --solver Gecode ../../../dev_fyp.mzn %dGamesLeft%dConstraintsDataset%d.dzn''' % (selected_games_left, constraint_num, dataset_num)
-    result = subprocess.check_output(cmd, shell=True)
-    return result.decode('utf-8')
-
-
 # table.field_names = header
 
 
-def run_tests(selected_games_left, num_of_teams, num_of_constraints):
+def run_tests(selected_games_left, num_of_teams, num_of_constraints, csv_type):
     os.chdir('LeagueTestMiniZinc%dTeams' % num_of_teams)
+
+    commd = ""
+
+    if csv_type == "fpoints":
+        commd = "min_fpoints.mzn"
+    else:
+        commd = "ic_min_fpoints.mzn"
 
     headers = []
 
@@ -63,29 +63,33 @@ def run_tests(selected_games_left, num_of_teams, num_of_constraints):
 
             # Adding the headers
             if constraint_num == 1:
-                headers = os.popen('mzn2feat -i ../../../dev_fyp.mzn -d %dGamesLeft%dConstraintsDataset0.dzn -p'
-                                   % (game_left, constraint_num)).read()
+                headers = os.popen('mzn2feat -i ../../../%s -d %dGamesLeft%dConstraintsDataset0.dzn -p'
+                                   % (commd, game_left, constraint_num)).read()
                 headers = headers.split(',')
                 headers += ['number_of_teams', 'fixtures_left',
-                            'number_of_constraints', 'runtime', 'fpoints']
+                            'number_of_constraints', 'runtime']
+                headers += [csv_type]
 
             for dataset_num in range(10):
-                output = os.popen('minizinc --output-time --time-limit 15000 --solver Gecode ../../../dev_fyp.mzn %dGamesLeft%dConstraintsDataset%d.dzn'
-                                  % (game_left, constraint_num,
+                output = os.popen('minizinc --output-time --time-limit 15000 --solver Gecode ../../../%s %dGamesLeft%dConstraintsDataset%d.dzn'
+                                  % (commd, game_left, constraint_num,
                                      dataset_num)).read()
 
-                feature_values = os.popen('mzn2feat -i ../../../dev_fyp.mzn -d %dGamesLeft%dConstraintsDataset%d.dzn'
-                                          % (game_left, constraint_num,
+                feature_values = os.popen('mzn2feat -i ../../../%s -d %dGamesLeft%dConstraintsDataset%d.dzn'
+                                          % (commd, game_left, constraint_num,
                                              dataset_num)).read()
 
                 feature_values = feature_values.split(',')
+                # print(feature_values[0])
 
                 output = output.split('\n')
 
-                fpoints = output[0]
+                min_num_losses = output[0]
 
-                if fpoints == '=====UNKNOWN=====':
-                    fpoints = '-1'
+                if min_num_losses == '=====UNKNOWN=====':
+                    min_num_losses = '-1'
+                elif csv_type == "min_num_losses":
+                    min_num_losses = min_num_losses[1]
 
                 # os.system('ls')
                 # print(output)
@@ -94,7 +98,7 @@ def run_tests(selected_games_left, num_of_teams, num_of_constraints):
 
                 row = feature_values
                 row += [num_of_teams, game_left, constraint_num,
-                        time_elapsed, fpoints]
+                        time_elapsed, min_num_losses]
                 # print('length of feature_values: %d, length of row: %d'
                 #       % (len(feature_values), len(row)))
                 times.append(row)
@@ -104,6 +108,4 @@ def run_tests(selected_games_left, num_of_teams, num_of_constraints):
             os.chdir('..')
 
         os.chdir('..')
-    # print(headers)
-    # print(times)
     return [headers, times]

@@ -1,0 +1,25 @@
+
+%FILE DATA:	Soccer Computational Problem for MiniZinc Models	%
+%AUTHOR:	Jack Wall	%
+%CONTACT:  	116397063@umail.ucc.ie			%
+%LAST UPDATE:	03/02/2020, 16:22:15						%
+%DESCRIPTION: 	208 games played with 32 games left				%
+
+
+n=16; %number of teams
+
+%Games to play
+games=[|14,8|6,4|13,7|11,6|9,12|16,9|10,5|1,14|16,14|5,8|3,11|14,5|2,12|4,8|9,3|4,5|5,12|8,2|13,3|7,4|15,3|7,15|10,3|15,4|6,5|12,9|12,8|2,14|12,10|10,6|14,10|5,16|];
+
+%Initial points
+iPoints=[30,33,34,37,27,35,44,27,41,26,42,47,39,31,37,28];
+
+%POSITION CONSTRAINTS
+% [|teamID, operator, position|...]
+% operators index:
+%  1 for =  operator
+%  2 for >  operator
+%  3 for >= operator
+%  4 for <  operator
+%  5 for <= operator
+positionConstraints=[|12,5,1|];

@@ -10,13 +10,13 @@ def create_test_files(num_of_teams, max_games_left, max_num_of_constraints):
     max_num_of_constraints = int(max_num_of_constraints)
     num_of_teams = int(num_of_teams)
 
-    if os.path.exists('LeagueTestMiniZinc%dTeams' % num_of_teams):
+    if os.path.exists('LeagueTestMiniZinc%dTeamsMinNumLosses' % num_of_teams):
         # os.system('rm -r LeagueTestMiniZinc%dTeams' % num_of_teams)
         print('exiting test files')
         return
 
-    os.mkdir('LeagueTestMiniZinc%dTeams' % num_of_teams)
-    os.chdir('LeagueTestMiniZinc%dTeams' % num_of_teams)
+    os.mkdir('LeagueTestMiniZinc%dTeamsMinNumLosses' % num_of_teams)
+    os.chdir('LeagueTestMiniZinc%dTeamsMinNumLosses' % num_of_teams)
 
     # os.mkdir('1GamesLeft')
     # os.chdir('1GamesLeft')
